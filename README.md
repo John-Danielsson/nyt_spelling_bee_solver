@@ -1,1 +1,1 @@
-The dict.txt file is taken from [https://github.com/dwyl/english-words/](https://github.com/dwyl/english-words/).
+SpellingBee.java is a program that prints out all possible words for the given letters in an instance of the NYT's Spelling Bee game. The dict.txt file is taken from [https://github.com/dwyl/english-words/](https://github.com/dwyl/english-words/).
