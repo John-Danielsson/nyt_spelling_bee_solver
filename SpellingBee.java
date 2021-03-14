@@ -1,5 +1,7 @@
 // import java.applet.*;
 // import java.awt.*;
+// This program solves the NYT's Spelling Bee Puzzle in a text-based UI.
+// I might make it into a browser plugin.
 import java.util.*;
 import java.io.*;
 
@@ -9,12 +11,12 @@ public class SpellingBee {
     public int MIN_WORD_LENGTH = 4;
     public int MAX_ALLOWED_CHARACTERS = 7;
 
-    public SpellingBee(List<String> dictionary) throws FileNotFoundException {
+    public SpellingBee(Set<String> dictionary) throws FileNotFoundException {
         wordMap = new HashMap<String, Set<Character>>();
         console = new Scanner(System.in);
         for (String word : dictionary) {
-            Set<Character> set = new HashSet<Character>();
             if (word.length() >= MIN_WORD_LENGTH) {
+                Set<Character> set = new HashSet<Character>();
                 for (int i = 0; i < word.length(); i++) {
                     set.add(word.charAt(i));
                 }
@@ -26,18 +28,10 @@ public class SpellingBee {
     }
 
     public Set<String> wordFinder(String letters, char middle) {
-        if (letters.length() > MAX_ALLOWED_CHARACTERS) {
-            throw new IllegalArgumentException("Too many letters.");
-        }
-        Set<Character> charSet = new HashSet<>();
         letters = letters.toLowerCase();
+        Set<Character> charSet = new HashSet<>();
         for (int i = 0; i < letters.length(); i++) {
-            char c = letters.charAt(i);
-            if (!charSet.contains(c)) {
-                charSet.add(c);
-            } else {
-                throw new IllegalArgumentException("Duplicate letters.");
-            }
+            charSet.add(letters.charAt(i));
         }
         Set<String> result = new TreeSet<String>();
         for (String word : wordMap.keySet()) {
@@ -61,19 +55,31 @@ public class SpellingBee {
         return response.equals("y");
     }
 
+    public static boolean hasDuplicateLetters(String s) {
+        Set<Character> charSet = new HashSet<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (charSet.contains(c)) {
+                return true;
+            }
+            charSet.add(c);
+        }
+        return false;
+    } 
+
     public static void interact(SpellingBee bee) {
         console = new Scanner(System.in);
-        System.out.print("Letters? (No more than 1 of the same letter.) ");
+        System.out.print("Letters? ");
         String response = console.next();
-        while (response.length() > 7 || response.length() < 7) {
-            System.out.println("Type only " + bee.MAX_ALLOWED_CHARACTERS + " letters.");
-            System.out.print("Letters? (No more than 1 of the same letter.) ");
+        while (response.length() != 7 || hasDuplicateLetters(response)) {
+            System.out.println("Invalid input (n != 7 or duplicate letters).");
+            System.out.print("Letters? ");
             response = console.next();
         }
         System.out.print("Middle character? ");
         String ch = console.next();
-        while (ch.length() > 1) {
-            System.out.println("Type only 1 character.");
+        while (ch.length() != 1) {
+            System.out.println("Invalid input.");
             System.out.print("Middle character? ");
             ch = console.next();
         }
@@ -85,12 +91,12 @@ public class SpellingBee {
 
     public static void main(String[] args) throws FileNotFoundException {
         File file = new File("dict.txt");
-        List<String> dictionary = new ArrayList<String>();
+        Set<String> dictionarySet = new HashSet<String>();
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
-            dictionary.add(scanner.nextLine());
+            dictionarySet.add(scanner.nextLine());
         }
         scanner.close();
-        interact(new SpellingBee(dictionary));
+        interact(new SpellingBee(dictionarySet));
     }
 }
